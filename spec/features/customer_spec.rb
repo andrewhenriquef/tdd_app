@@ -48,13 +48,7 @@ RSpec.feature "Customers", type: :feature do
   end
 
   scenario 'Shows a client' do
-    customer = Customer.create!(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
-      phone: Faker::PhoneNumber.phone_number,
-      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
-      smoker: ['Y', 'N'].sample
-    )
+    customer = create(:customer)
 
     visit customer_path(customer)
 
@@ -66,21 +60,8 @@ RSpec.feature "Customers", type: :feature do
   end
 
   scenario 'Shows all clients' do
-    customer1 = Customer.create!(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
-      phone: Faker::PhoneNumber.phone_number,
-      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
-      smoker: ['Y', 'N'].sample
-    )
-
-    customer2 = Customer.create!(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
-      phone: Faker::PhoneNumber.phone_number,
-      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
-      smoker: ['Y', 'N'].sample
-    )
+    customer1 = create(:customer)
+    customer2 = create(:customer)
 
     visit customers_path
 
@@ -99,13 +80,7 @@ RSpec.feature "Customers", type: :feature do
 
   # happy path
   scenario 'Updates a valid Client' do
-    customer = Customer.create!(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
-      phone: Faker::PhoneNumber.phone_number,
-      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
-      smoker: ['Y', 'N'].sample
-    )
+    customer = create(:customer)
 
     new_name = Faker::Name.name
     visit edit_customer_path(customer)
@@ -119,13 +94,7 @@ RSpec.feature "Customers", type: :feature do
 
   # sad path
   scenario 'Updates a invalid Client' do
-    customer = Customer.create!(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
-      phone: Faker::PhoneNumber.phone_number,
-      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
-      smoker: ['Y', 'N'].sample
-    )
+    customer = create(:customer)
 
     new_name = Faker::Name.name
     visit edit_customer_path(customer)
@@ -137,5 +106,44 @@ RSpec.feature "Customers", type: :feature do
 
     expect(page).to have_content("Name can't be blank")
     expect(page).to have_content("Email can't be blank")
+  end
+
+  scenario 'Click on show link' do
+    customer = Customer.create!(
+      name: Faker::Name.name,
+      email: Faker::Internet.email,
+      phone: Faker::PhoneNumber.phone_number,
+      avatar: "#{Rails.root}/spec/fixtures/avatar.png",
+      smoker: ['Y', 'N'].sample
+    )
+
+    visit customers_path
+
+    find(:xpath, 'html/body/table/tbody/tr[1]/td[6]/a').click
+
+    expect(page).to have_content(customer.name)
+    expect(page).to have_content(customer.email)
+    expect(page).to have_content(customer.phone)
+    expect(page).to have_content(customer.avatar)
+    expect(page).to have_content(customer.smoker)
+  end
+
+  scenario 'Click on edit link' do
+    customer = create(:customer)
+
+    visit customers_path
+
+    find(:xpath, 'html/body/table/tbody/tr[1]/td[7]/a').click
+    expect(page).to have_content("Edit Client #{customer.name}")
+  end
+
+  scenario 'Click on delete link', js: true do
+    customer = create(:customer)
+
+    visit customers_path
+
+    find(:xpath, 'html/body/table/tbody/tr[1]/td[8]/a').click
+
+    page.driver.browser.switch_to.alert.accept
   end
 end

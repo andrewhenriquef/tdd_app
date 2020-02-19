@@ -1,13 +1,32 @@
 <h1> Listando Clientes </h1>
 
-<ul>
-  <% @customers.each do |customer| %>
-    <li> <%= customer.name %> </li>
-    <li> <%= customer.email %> </li>
-    <li> <%= customer.phone %> </li>
-    <li> <%= customer.avatar %> </li>
-    <li> <%= customer.smoker %> </li>
-  <% end %>
-</ul>
+<table>
+  <thead>
+    <tr>
+      <td> Nome </td>
+      <td> Email </td>
+      <td> Phone </td>
+      <td> avata </td>
+      <td> Smoker </td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @customers.each do |customer| %>
+      <tr>
+        <td> <%= customer.name %> </td>
+        <td> <%= customer.email %> </td>
+        <td> <%= customer.phone %> </td>
+        <td> <%= customer.avatar %> </td>
+        <td> <%= customer.smoker %> </td>
+        <td> <%= link_to 'Show', customer_path(customer) %></td>
+        <td> <%= link_to 'Edit', edit_customer_path(customer) %></td>
+        <td> <%= link_to 'Delete', customer, method: :delete, data: { confirm: 'Are you sure?'} %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <%= link_to 'New Client', new_customer_path %>
