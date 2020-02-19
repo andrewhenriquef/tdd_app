@@ -20,4 +20,30 @@ RSpec.feature "Customers", type: :feature do
     click_on 'New Client'
     expect(page).to have_content('New Client Registration')
   end
+
+  # happy path
+  scenario 'Register a valid client' do
+    visit new_customer_path
+    customer_name = Faker::Name.name
+
+    fill_in 'Name', with: customer_name
+    fill_in 'Email', with: Faker::Internet.email
+    fill_in 'Phone', with: Faker::PhoneNumber.phone_number
+    attach_file 'Avatar', "#{Rails.root}/spec/fixtures/avatar.png"
+    choose(option: ['Y', 'N'].sample)
+    click_on 'Create Client'
+
+    expect(page).to have_content('Client succesfully registered')
+    expect(Customer.last.name).to eq(customer_name)
+  end
+
+  # sad path
+  scenario 'Register a invalid client' do
+    visit new_customer_path
+
+    click_on 'Create Client'
+
+    expect(page).to have_content("Name can't be blank")
+    expect(page).to have_content("Email can't be blank")
+  end
 end
